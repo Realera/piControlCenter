@@ -83,15 +83,16 @@ class Control(object):
 
         self.last_checked = latest_email_id
         result, data = self.mail.fetch(latest_email_id, "(RFC822)")
-        
+
         voice_command = email.message_from_string(data[0][1].decode('utf-8'))
         voice_command=str(voice_command.get_payload()).lower().strip()
-        
+
+        #TOOD encode it properly instead of this...
         voice_command = voice_command.replace("=c3=a4","ä").replace("=c3=84","ä").replace("w6q=","ä")
         voice_command = voice_command.replace("=c3=a5","å").replace("=c3=85","å").replace("w6u=","å")
         voice_command = voice_command.replace("=C3=b6","ö").replace("=c3=96","ö").replace("w7y=","ö")
         voice_command = voice_command.replace("="," ").strip()
-        
+
         return voice_command
 
     def handle(self):
@@ -130,15 +131,7 @@ class Control(object):
             print("Received an exception while running: {exc}".format(
                   **locals()))
             print("Restarting...")
-        time.sleep(1)
 
-    def isBase64(self,sMsg):
-        try:
-            if base64.b64encode(base64.b64decode(sMsg)) == sMsg:
-               return true
-        except Exception:
-            pass
-            return false
-        
+
 if __name__ == '__main__':
     Control(username, password)
