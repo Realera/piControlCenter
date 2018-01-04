@@ -7,21 +7,20 @@ import email
 import os
 import pkgutil
 import base64
+import configparser
 
 
 
 class ControlException(Exception):
     pass
 
-
 class Control(object):
-    def __init__(self,username,password):
+    def __init__(self, username, password):
         print("------------------------------------------------------")
         print("-                    SIRI CONTROL                    -")
         print("-           Created by Sanjeet Chatterjee            -")
         print("-      Website: thereallycoolstuff.wordpress.com     -")
         print("------------------------------------------------------")
-
 
         try:
             self.last_checked = -1
@@ -44,7 +43,7 @@ class Control(object):
             print("Or IMAP is not enabled.")
 
     def load(self):
-        """Try to load all modules found in the modules folder"""
+        """Try to load all modules found in the modules folder."""
         print("\n")
         print("Loading modules...")
         self.modules = []
@@ -63,12 +62,12 @@ class Control(object):
                 else:
                     print("[ERROR] The module '{0}' is not in the "
                           "correct format.".format(name))
-            except:
+            except Exception:
                 print("[ERROR] The module '" + name + "' has some errors.")
         print("\n")
 
     def fetch_command(self):
-        """Retrieve the last Note created if new id found"""
+        """Retrieve the last Note created if new id found."""
         self.mail.list()
         self.mail.select("Notes")
 
@@ -85,13 +84,19 @@ class Control(object):
         result, data = self.mail.fetch(latest_email_id, "(RFC822)")
 
         voice_command = email.message_from_string(data[0][1].decode('utf-8'))
-        voice_command=str(voice_command.get_payload()).lower().strip()
+        voice_command = str(voice_command.get_payload()).lower().strip()
 
-        #TOOD encode it properly instead of this...
-        voice_command = voice_command.replace("=c3=a4","ä").replace("=c3=84","ä").replace("w6q=","ä")
-        voice_command = voice_command.replace("=c3=a5","å").replace("=c3=85","å").replace("w6u=","å")
-        voice_command = voice_command.replace("=C3=b6","ö").replace("=c3=96","ö").replace("w7y=","ö")
-        voice_command = voice_command.replace("="," ").strip()
+        # TODO encode it properly instead of this...
+        voice_command = voice_command.replace("=c3=a4", "ä")\
+                                     .replace("=c3=84", "ä")\
+                                     .replace("w6q=", "ä")
+        voice_command = voice_command.replace("=c3=a5", "å")\
+                                     .replace("=c3=85", "å")\
+                                     .replace("w6u=", "å")
+        voice_command = voice_command.replace("=C3=b6", "ö")\
+                                     .replace("=c3=96", "ö")\
+                                     .replace("w7y=", "ö")
+        voice_command = voice_command.replace("=", " ").strip()
 
         return voice_command
 
@@ -118,8 +123,8 @@ class Control(object):
                     try:
                         module.execute(command)
                         print("The module {0} has been executed "
-                               "successfully.".format(module.moduleName))
-                    except:
+                              "successfully.".format(module.moduleName))
+                    except Exception:
                             print("[ERROR] There has been an error "
                                   "when running the {0} module".format(
                                    module.moduleName))
